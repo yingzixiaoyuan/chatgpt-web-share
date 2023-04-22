@@ -36,14 +36,6 @@
         @keydown.enter.prevent
       />
     </n-form-item>
-
-
-      <!-- <n-form-item :label="$t('commons.repeatedpassword')" path="repeatedpassword">
-        <n-input type="password" show-password-on="click" v-model:value="formValue.repeatedpassword" :placeholder="$t('tips.pleaseEnterPassword')" :input-props="{
-          autoComplete: 'current-password'
-        }" />
-
-      </n-form-item> -->
       <n-form-item wrapper-col="{ span: 16, offset: 8 }">
         <n-button type="primary" @click="register" :enabled="loading" style="margin-left:10px">{{ $t("commons.register") }}</n-button>
       </n-form-item>
@@ -92,11 +84,30 @@ function validatePasswordSame (rule: FormItemRule, value: string): boolean {
   return value === formValue.password
 }
 
+function validatePassword(rule: FormItemRule, valPwd: string): boolean {
+  if (valPwd.length < 8) {
+      return false
+    } 
+  let arrVerify = [
+    {regName: 'Number', regValue: /^.*[0-9]+.*/},
+    {regName: 'LowerCase', regValue: /^.*[a-z]+.*/},
+    {regName: 'UpperCase', regValue: /^.*[A-Z]+.*/},
+    {regName: 'SpecialCharacters', regValue: /^.*[^a-zA-Z0-9]+.*/}
+  ];
+  let regNum = 0;// 记录匹配的次数
+  for (let iReg = 0; iReg < arrVerify.length; iReg++) {
+    if (arrVerify[iReg].regValue.test(valPwd)) {
+      regNum = regNum + 1;
+    }
+  }
+  return regNum >= 3
+}
+
 const loginRules = {
   username: { required: true, message: t("tips.pleaseEnterUsername"), trigger: 'blur' },
-  password: { required: true, message: t("tips.pleaseEnterPassword"), trigger: 'blur' },
-  nickname: { required: true, trigger: 'blur' },
-  email: { required: true, type: 'email', message: 'Please enter a valid email address',trigger: 'blur' },
+  password: { required: true, message: t("tips.pleaseEnterPassword"), trigger: ['input', 'blur'],validator: validatePassword },
+  nickname: { required: true, trigger: 'blur',message: t("tips.pleaseEnterNickname") },
+  email: { required: true, type: 'email', message: t("tips.pleaseEnterEmail") ,trigger: 'blur' },
   reenteredPassword: [
         {
           required: true,

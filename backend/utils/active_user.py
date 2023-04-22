@@ -1,7 +1,8 @@
 import base64
 import smtplib
 import time
-from email.message import EmailMessage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 import api.globals as g
 from authlib.jose import JoseError, jwt
@@ -15,9 +16,8 @@ def generate_token(user_id:int):
     # 用于签名的密钥
     key = config.get("user_secret")
     # 待签名的数据负载
-    data = {'id': user_id, 'exp': time.time() + 180}
+    data = {'id': user_id, 'exp': time.time() + 86400}
     return base64.b64encode(jwt.encode(header=header, payload=data, key=key))
-    # return jwt.encode(header=header, payload=data, key=key)
     
 def validate_token(token):
     """用于验证用户注册和用户修改密码或邮箱的token, 并完成相应的确认操作"""
@@ -26,9 +26,7 @@ def validate_token(token):
     try:
         data = jwt.decode(token, key)
         if data.get("exp") < time.time():
-            print("get data",data)
-            return data.get("id")
-            # return True
+            return False
         return data.get("id")
     except JoseError:
         return False
@@ -37,18 +35,27 @@ def sendMail(receiver_email: str,user_id:int):
     # s = Serializer(config.get("user_secret"), 86400)
     data = generate_token(user_id)
     token = data.decode()
-    print(token)
     activation_link = f"{config.get('frontend_url')}/activate/{token}"
     # 定义相关数据,请更换自己的真实数据
-    smtpserver = 'smtp.163.com'
-    sender = '13522198374@163.com'
-    password = 'xiaoyuan234'
-    msg = EmailMessage()
-    msg.set_content(f"请点击以下链接激活您的账号：\n\n{activation_link}")
-
+    smtpserver = config.get("smtpserver")
+    sender = config.get("sender")
+    password = config.get("password")
+    msg = MIMEMultipart("alternative")
+    # msg.set_content(f"请点击以下链接激活您的账号(有效期一天)：\n\n{activation_link}")
+    html = f"""\
+    <html>
+    <body>
+        <p>Hi,请点击以下链接激活您的账号(有效期一天):<br>
+        <a href="{activation_link}">激活链接</a>
+        </p>
+    </body>
+    </html>
+    """
+    html_part = MIMEText(html, "html")
     msg["Subject"] = "激活您的账号"
     msg["From"] = sender
     msg["To"] = receiver_email
+    msg.attach(html_part)
     # 登陆并发送邮件
     try:
         smtp = smtplib.SMTP()
