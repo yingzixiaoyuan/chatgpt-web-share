@@ -15,7 +15,7 @@ class ChatGPTManager:
             "access_token": g.config.get("chatgpt_access_token"),
             "paid": g.config.get("chatgpt_paid"),
             "model": "text-davinci-002-render-sha", # default model
-        })
+        },base_url=g.config.get("chatgpt_base_url", None))
         self.semaphore = asyncio.Semaphore(1)
 
     def is_busy(self):
