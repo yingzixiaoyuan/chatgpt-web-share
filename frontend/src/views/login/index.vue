@@ -14,6 +14,7 @@
       </n-form-item>
       <n-form-item wrapper-col="{ span: 16, offset: 8 }">
         <n-button type="primary" @click="login" :enabled="loading">{{ $t("commons.login") }}</n-button>
+        <n-button type="primary" @click="register" style="margin-left:10px">{{ $t("commons.register") }}</n-button>
       </n-form-item>
     </n-form>
   </div>
@@ -43,7 +44,9 @@ const loginRules = {
   username: { required: true, message: t("tips.pleaseEnterUsername"), trigger: 'blur' },
   password: { required: true, message: t("tips.pleaseEnterPassword"), trigger: 'blur' }
 }
-
+const register = () => {
+  router.push({ name: 'register' });
+}
 const login = async () => {
   if (loading.value) return;
   formRef.value?.validate((errors?: Array<FormValidationError>) => {

@@ -1,13 +1,15 @@
-from sqlalchemy.future import select
+import datetime
 
 from api.database import get_async_session_context, get_user_db_context
 from api.exceptions import AuthorityDenyException, InvalidParamsException
 from api.models import User
 from api.response import response
-from api.schema import UserRead, UserUpdate, UserCreate, LimitSchema
-from api.users import auth_backend, fastapi_users, current_active_user, get_user_manager_context, current_super_user
-
+from api.schema import LimitSchema, UserCreate, UserRead, UserUpdate
+from api.users import (auth_backend, current_active_user, current_super_user,
+                       fastapi_users, get_user_manager_context)
 from fastapi import APIRouter, Depends
+from sqlalchemy.future import select
+from utils.active_user import validate_token
 
 router = APIRouter()
 
@@ -71,7 +73,22 @@ async def update_limit(limit: LimitSchema, user_id: int = None, _user: User = De
         await session.commit()
         return response(200)
 
-
+@router.get("/user/{token}/activate", tags=["user"])
+async def active_user( token: str = None):
+    result = validate_token(token)
+    if not result:
+        raise InvalidParamsException("errors.invalidToken")
+    async with get_async_session_context() as session:
+        target_user: User = await session.get(User, result)
+        if target_user is None:
+            raise InvalidParamsException("errors.userNotExist")
+        setattr(target_user, "is_active", True)
+        setattr(target_user, "active_time", datetime.datetime.now())
+        # 使用**kargs类似的写法，但是跳过None值
+        session.add(target_user)
+        await session.commit()
+        return response(200)
+        
 router.include_router(
     fastapi_users.get_users_router(UserRead, UserUpdate),
     prefix="/user",

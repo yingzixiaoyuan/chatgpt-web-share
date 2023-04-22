@@ -29,6 +29,33 @@ const router = createRouter({
       },
     },
     {
+      path: "/register",
+      name: "register",
+      component: () => import("@/views/register/index.vue"),
+      meta: {
+        requiresAuth: false,
+        roles: ["superuser", "user"],
+      },
+    },
+    {
+      path: "/register",
+      name: "register",
+      component: () => import("@/views/register/index.vue"),
+      meta: {
+        requiresAuth: false,
+        roles: ["superuser", "user"],
+      },
+    },
+    {
+      path: "/activate/:token",
+      name: "activate",
+      component: () => import("@/views/activate/index.vue"),
+      meta: {
+        requiresAuth: false,
+        roles: ["superuser", "user"],
+      },
+    },
+    {
       path: "/conversation",
       name: "conversation",
       component: () => import("@/views/conversation/index.vue"),

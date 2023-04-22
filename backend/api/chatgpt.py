@@ -1,10 +1,12 @@
-import api.globals as g
+import asyncio
 import os
+
 from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
-import asyncio
-from api.enums import ChatModels
 from utils.common import get_conversation_model
+
+import api.globals as g
+from api.enums import ChatModels
 
 
 class ChatGPTManager:
@@ -13,7 +15,7 @@ class ChatGPTManager:
             "access_token": g.config.get("chatgpt_access_token"),
             "paid": g.config.get("chatgpt_paid"),
             "model": "text-davinci-002-render-sha", # default model
-        }, base_url=g.config.get("chatgpt_base_url", None))
+        })
         self.semaphore = asyncio.Semaphore(1)
 
     def is_busy(self):

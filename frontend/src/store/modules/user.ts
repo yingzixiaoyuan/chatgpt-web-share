@@ -1,4 +1,4 @@
-import { getUserInfoApi, loginApi, LoginData, logoutApi } from "@/api/user";
+import { getUserInfoApi, loginApi, LoginData, logoutApi,activateUserApi } from "@/api/user";
 import { UserRead } from "@/types/schema";
 import { clearCookie } from "@/utils/auth";
 import { defineStore } from "pinia";
@@ -55,6 +55,14 @@ const useUserStore = defineStore("user", {
       } finally {
         this.resetInfo();
         clearCookie();
+      }
+    },
+    // activate
+    async activate(token:string) {
+      try {
+        await activateUserApi(token);
+      } catch (err) {
+        throw err;
       }
     },
   },

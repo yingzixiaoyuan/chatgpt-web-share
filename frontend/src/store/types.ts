@@ -8,10 +8,14 @@ interface UserState {
   savedPassword: string | null;
 }
 
+interface RegisterUserState {
+  user: UserRead | null;
+}
+
 interface AppState {
   theme: any;
   language: any;
   preference: RemovableRef<Preference>
 }
 
-export type { UserState, AppState };
+export type { UserState, AppState,RegisterUserState };

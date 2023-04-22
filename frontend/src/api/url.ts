@@ -3,7 +3,8 @@ enum ApiUrl {
   Login = "/auth/login",
   Logout = "/auth/logout",
   UserInfo = "/user/me",
-
+  RegisterUser = "/register",
+  
   Conversation = "/conv",
   UserList = "/user",
 

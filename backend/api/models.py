@@ -1,12 +1,10 @@
 from typing import List, Optional
 
-from fastapi_users_db_sqlalchemy import Integer, GUID, UUID_ID
-from sqlalchemy import String, DateTime, Enum, Boolean, Float, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped, mapped_column
+from fastapi_users_db_sqlalchemy import GUID, UUID_ID, Integer
+from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, String
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from api.enums import ChatStatus, ChatModels
+from api.enums import ChatModels, ChatStatus
 
 
 # declarative base class
@@ -35,7 +33,7 @@ class User(Base):
     available_gpt4_ask_count: Mapped[int] = mapped_column(Integer, default=-1, comment="可用的gpt4对话次数")
 
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
 
     hashed_password: Mapped[str] = mapped_column(String(1024))

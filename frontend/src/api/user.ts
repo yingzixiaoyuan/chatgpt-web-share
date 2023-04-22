@@ -51,3 +51,7 @@ export function updateUserLimitApi(user_id: number, limit: LimitSchema) {
 // export function updateUserInfoApi(userInfo: Partial<UserUpdate>) {
 //   return axios.patch<UserRead>(ApiUrl.UserInfo, userInfo);
 // }
+
+export function activateUserApi(token: string) {
+  return axios.get(ApiUrl.UserList + `/${token}` + '/activate');
+}

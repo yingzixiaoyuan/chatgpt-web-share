@@ -1,26 +1,24 @@
 import contextlib
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
+from fastapi import Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_users import (BaseUserManager, FastAPIUsers, IntegerIDMixin,
+                           InvalidID, models, schemas)
+from fastapi_users.authentication import (AuthenticationBackend,
+                                          CookieTransport, JWTStrategy)
+from fastapi_users.models import UP
+from sqlalchemy import Integer, select
 from starlette.websockets import WebSocket
+from utils.active_user import sendMail
+from utils.logger import get_logger
 
 import api.exceptions
 import api.globals as g
-
-from typing import Optional
-
-from fastapi import Depends, Request, HTTPException
-from fastapi_users import BaseUserManager, FastAPIUsers, models, IntegerIDMixin, InvalidID, schemas
-from fastapi_users.authentication import CookieTransport, AuthenticationBackend
-from fastapi_users.authentication import JWTStrategy
-
-from api.database import get_user_db, get_async_session_context, get_user_db_context
+from api.database import (get_async_session_context, get_user_db,
+                          get_user_db_context)
 from api.models import User
-
-from sqlalchemy import select, Integer
-from fastapi_users.models import UP
-from utils.logger import get_logger
 
 config = g.config
 logger = get_logger(__name__)
@@ -108,6 +106,8 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
         return user
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
+        if not user.is_superuser:
+            sendMail(receiver_email=user.email,user_id=user.id)
         print(f"User {user.id} has registered.")
 
     async def on_after_forgot_password(

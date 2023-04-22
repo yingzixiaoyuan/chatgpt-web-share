@@ -1,11 +1,11 @@
-import uuid
 import datetime
+import uuid
 from typing import List
 
 from fastapi_users import schemas
-from pydantic import Field, BaseModel, validator
+from pydantic import BaseModel, Field, validator
 
-from api.enums import ChatStatus, ChatModels
+from api.enums import ChatModels, ChatStatus
 
 
 class UserRead(schemas.BaseUser[int]):
@@ -48,6 +48,7 @@ class UserCreate(schemas.BaseUserCreate):
     can_use_paid: bool = False
     max_conv_count: int = -1
     available_ask_count: int = -1
+    is_active: bool = False
 
     class Config:
         orm_mode = True

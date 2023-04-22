@@ -1,5 +1,6 @@
 {
   "commons": {
+    "register": "Register",
     "notLogin": "Not logged in",
     "siteTitle": "ChatGPT",
     "confirm": "Confirm",
@@ -139,6 +140,7 @@
     "invalidParams": "Invalid Params"
   },
   "tips": {
+    "activeUser": "Please go to the email and click the activation link to activate the account",
     "loginExpired": "Login expired. Do you want to go to the login page?",
     "pleaseEnterUsername": "Please enter username",
     "pleaseEnterPassword": "Please enter password",

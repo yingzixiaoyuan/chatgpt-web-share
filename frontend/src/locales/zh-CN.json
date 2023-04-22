@@ -1,5 +1,6 @@
 {
   "commons": {
+    "register": "注册",
     "notLogin": "未登录",
     "siteTitle": "ChatGPT",
     "confirm": "确定",
@@ -141,6 +142,7 @@
     "internal": "内部错误"
   },
   "tips": {
+    "activeUser": "注册账号成功,请前往邮箱中点击激活链接激活账号",
     "loginExpired": "登录已过期。是否跳转到登录页面？",
     "pleaseEnterUsername": "请输入用户名",
     "pleaseEnterPassword": "请输入密码",

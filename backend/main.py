@@ -1,39 +1,35 @@
 import asyncio
+import os
 import time
 from datetime import datetime
 
 import aiocron
-
-import api.chatgpt
-from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
-from httpx import HTTPError
+import dateutil.parser
 import uvicorn
-
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware import Middleware
+from fastapi.middleware.cors import CORSMiddleware
+from httpx import HTTPError
+from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+import api.chatgpt
 import api.globals as g
-import os
 import utils.store_statistics
-from utils.sync_conversations import sync_conversations
-
-from api.enums import ChatStatus
-from api.models import Conversation, User
-from api.response import CustomJSONResponse, PrettyJSONResponse, handle_exception_response
 from api.database import create_db_and_tables, get_async_session_context
+from api.enums import ChatStatus
 from api.exceptions import SelfDefinedException
-from api.routers import users, chat, system, status
-from fastapi.middleware import Middleware
-from fastapi.middleware.cors import CORSMiddleware
-
-from utils.logger import setup_logger, get_log_config, get_logger
-from utils.proxy import close_reverse_proxy
+from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
+from api.models import Conversation, User
+from api.response import (CustomJSONResponse, PrettyJSONResponse,
+                          handle_exception_response)
+from api.routers import chat, register, status, system, users
 from utils.create_user import create_user
-
-import dateutil.parser
-from revChatGPT.typings import Error as revChatGPTError
+from utils.logger import get_log_config, get_logger, setup_logger
+from utils.proxy import close_reverse_proxy
+from utils.sync_conversations import sync_conversations
 
 config = g.config
 
@@ -53,6 +49,7 @@ app.include_router(users.router)
 app.include_router(chat.router)
 app.include_router(system.router)
 app.include_router(status.router)
+app.include_router(register.router)
 
 origins = config.get("cors_allow_origins", [
     "http://localhost",
