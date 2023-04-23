@@ -1,6 +1,7 @@
+from api.database import get_async_session_context, get_user_db_context
 from api.schema import UserCreate
 from api.users import get_user_manager_context
-from api.database import get_user_db_context, get_async_session_context
+
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -14,7 +15,7 @@ async def create_user(username, nickname: str, email: str, password: str, is_sup
                     user = await user_manager.create(
                         UserCreate(
                             username=username, nickname=nickname,
-                            email=email, password=password, is_superuser=is_superuser,
+                            email=email, password=password, is_superuser=is_superuser,is_active=True,
                             **kwargs
                         )
                     )

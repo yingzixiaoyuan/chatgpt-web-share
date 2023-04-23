@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import uuid
 from pathlib import Path
 from typing import AsyncGenerator
 
@@ -8,10 +9,12 @@ import httpx
 import requests
 import tiktoken
 
-# sys.path.insert(0,"/Users/chulihui/Downloads/tap4fun/code/ct/local/chatgpt-web-share/backend/api/v3")
+from utils.logger import get_logger
+
 from . import typings as t
-# from typings import ActionRefuseError, APIConnectionError
 from .utils import get_filtered_keys_from_object
+
+logger = get_logger(__name__)
 
 
 class Chatbot:
@@ -99,18 +102,24 @@ class Chatbot:
         Get message history
         :param id: UUID of conversation
         """
-        return self.conversation[convo_id]
+        result = []
+        try:
+            result =  self.conversation[convo_id]
+        except KeyError:
+            pass
+        return result
 
     def add_to_conversation(
         self,
         message: str,
         role: str,
         convo_id: str = "default",
-    ) -> None:
+    ) -> str:
         """
         Add a message to the conversation
         """
         self.conversation[convo_id].append({"role": role, "content": message})
+        return convo_id
 
     def __truncate_conversation(self, convo_id: str = "default") -> None:
         """
@@ -204,7 +213,7 @@ class Chatbot:
             stream=True,
         )
         if response.status_code != 200:
-            raise APIConnectionError(
+            raise t.APIConnectionError(
                 f"{response.status_code} {response.reason} {response.text}",
             )
         response_role: str or None = None
@@ -217,6 +226,7 @@ class Chatbot:
             if line == "[DONE]":
                 break
             resp: dict = json.loads(line)
+            usage = resp.get("usage")
             choices = resp.get("choices")
             if not choices:
                 continue
@@ -229,6 +239,7 @@ class Chatbot:
                 content = delta["content"]
                 full_response += content
                 yield content
+        logger.info(f"prompt:{usage['prompt_tokens']},completion_tokens:{usage['completion_tokens']},total_tokens:{usage['total_tokens']}")
         self.add_to_conversation(full_response, response_role, convo_id=convo_id)
 
     async def ask_stream_async(
@@ -299,8 +310,12 @@ class Chatbot:
                     response_role = delta["role"]
                 if "content" in delta:
                     content: str = delta["content"]
+                    # print("get xiao",resp)
                     full_response += content
                     yield content
+                # usage = resp.get("usage",None)
+                # logger.info(f"prompt:{usage['prompt_tokens']},completion_tokens:{usage['completion_tokens']},total_tokens:{usage['total_tokens']}")
+                
         self.add_to_conversation(full_response, response_role, convo_id=convo_id)
 
     async def ask_async(
@@ -313,14 +328,19 @@ class Chatbot:
         """
         Non-streaming ask
         """
+
+        if convo_id == "default" or not convo_id:
+            convo_id = str(uuid.uuid4())
         response = self.ask_stream_async(
             prompt=prompt,
             role=role,
             convo_id=convo_id,
             **kwargs,
         )
+        # async for r in response:
+        #     yield r
         full_response: str = "".join([r async for r in response])
-        return full_response
+        return full_response,convo_id,self.engine
 
     def ask(
         self,
@@ -341,11 +361,16 @@ class Chatbot:
         full_response: str = "".join(response)
         return full_response
 
-    def delete_conversation(self, convo_id: str = "default") -> None:
+    async def delete_conversation(self, convo_id: str = "default") -> None:
         """
         Delete a conversation
         """
-        del self.conversation[convo_id]
+        try:
+            logger.info(f"Deleting conversation {convo_id}")
+            del self.conversation[convo_id]
+        except KeyError:
+            pass
+        return
 
     def rollback(self, n: int = 1, convo_id: str = "default") -> None:
         """
@@ -354,13 +379,22 @@ class Chatbot:
         for _ in range(n):
             self.conversation[convo_id].pop()
 
-    async def reset(self, convo_id: str = "default", system_prompt: str = None) -> None:
+    async def change_title(self, conversation_id:str,title: str) -> None:
+        return 
+
+    async def gen_title(self,conversation_id:str, message_id:str) -> str:
+        return "Chatbot"
+
+    def reset(self, convo_id: str = "default", system_prompt: str = None) -> None:
         """
         Reset the conversation
         """
         self.conversation[convo_id] = [
             {"role": "system", "content": system_prompt or self.system_prompt},
         ]
+        
+    def reset_chat(self):
+        return
 
     def save(self, file: str, *keys: str) -> None:
         """
@@ -418,6 +452,6 @@ class Chatbot:
             self.__dict__.update({key: loaded_config[key] for key in keys})
 
 
-renjian = Chatbot(api_key="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")
-result = renjian.ask("1+1=?")
-print("get reuslt:", result)
+# renjian = Chatbot(api_key="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")
+# result = renjian.ask("1+1=?")
+# print("get reuslt:", result)

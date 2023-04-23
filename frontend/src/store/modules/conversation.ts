@@ -91,13 +91,14 @@ const useConversationStore = defineStore("conversation", {
       conv_detail.mapping[recvMessage.id] = recvMessage;
 
       // 这里只有在新建对话时调用
-      if (conv_detail.current_node === null) {
+      if (conv_detail.current_node === null || typeof(conv_detail.current_node) === 'undefined') {
         conv_detail.current_node = recvMessage.id;
       } else {
         const lastTopMessage = conv_detail.mapping[conv_detail.current_node];
-        sendMessage.parent = lastTopMessage.id;
-        lastTopMessage.children.push(sendMessage.id);
-        conv_detail.current_node = recvMessage.id;
+          sendMessage.parent = lastTopMessage?.id;
+          lastTopMessage.children.push(sendMessage.id);
+          conv_detail.current_node = recvMessage.id;
+        
       }
       sendMessage.children = [recvMessage.id];
       recvMessage.parent = sendMessage.id;

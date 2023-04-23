@@ -38,7 +38,7 @@ class ChatGPTManager:
         return messages
 
     async def clear_conversations(self):
-        await self.chatbot.reset()
+        return self.chatbot.reset()
         # await self.chatbot.clear_conversations()
 
 
@@ -47,7 +47,7 @@ class ChatGPTManager:
         model = None
         if model_name is not None and model_name != ChatModels.unknown:
             model = model_name.value
-        return self.chatbot.ask(prompt=message, convo_id=conversation_id, model=model,
+        return self.chatbot.ask_async(prompt=message, convo_id=conversation_id, model=model,
                                 timeout=timeout)
 
     async def delete_conversation(self, conversation_id: str):
