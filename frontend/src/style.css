@@ -3,3 +3,17 @@
     visibility: hidden !important;
   }
 }
+
+
+#content {
+    margin: 0 auto; /*居中*/
+    border-radius:10px; /*圆弧*/
+    border: solid #222;   /*设置边框样式跟颜色*/
+    margin: 0 auto;   /*设置div居中*/
+    width: 500px;  /*设置div宽度*/
+    height: 170px; /*设置div高度*/
+    border-width: 1px; /*设置边框宽度*/
+    background: #fff;  /*设置背景色*/
+}
+
+
