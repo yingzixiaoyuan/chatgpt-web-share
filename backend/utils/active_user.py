@@ -58,12 +58,11 @@ def sendMail(receiver_email: str,user_id:int):
     msg.attach(html_part)
     # 登陆并发送邮件
     try:
-        smtp = smtplib.SMTP()
-        ##打开调试模式
-        # smtp.set_debuglevel(1)
-        smtp.connect(smtpserver)
-        smtp.login(sender, password)
-        smtp.sendmail(sender, receiver_email, msg.as_string())
+        with smtplib.SMTP_SSL(smtpserver, 465) as smtp:
+            ##打开调试模式
+            # smtp.set_debuglevel(1)
+            smtp.login(sender, password)
+            smtp.sendmail(sender, receiver_email, msg.as_string())
     except Exception as e:
         print("邮件发送失败！！",e)
     else:
