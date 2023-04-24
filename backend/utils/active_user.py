@@ -64,8 +64,8 @@ def sendMail(receiver_email: str,user_id:int):
         smtp.connect(smtpserver)
         smtp.login(sender, password)
         smtp.sendmail(sender, receiver_email, msg.as_string())
-    except:
-        print("邮件发送失败！！")
+    except Exception as e:
+        print("邮件发送失败！！",e)
     else:
         print("邮件发送成功")
     finally:
