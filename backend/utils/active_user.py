@@ -48,14 +48,14 @@ async def sendMail(receiver_email: str,user_id:int):
     <html>
         <body>
         <style>
-            div{
+            div {{
                 width: 500px;
                 height: 120px;
                 border-style: solid;
                 border-left-width: 10px;
                 border-color: #008800;
                 border-left-style: blue;
-            }
+            }}
         </style>
         <div>
             <br>
