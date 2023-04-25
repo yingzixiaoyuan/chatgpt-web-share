@@ -1,5 +1,5 @@
 
-import {registeruserApi,activateuserApi} from "@/api/register";
+import {registeruserApi} from "@/api/register";
 import { defineStore } from "pinia";
 import { UserCreate,UserRead } from "@/types/schema";
 import { RegisterUserState } from "../types";
