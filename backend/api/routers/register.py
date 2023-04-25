@@ -24,13 +24,14 @@ async def register_user(user:UserCreate):
     try: 
         async with get_async_session_context() as session:
             async with get_user_db_context(session) as user_db:
-                async with get_user_manager_context(user_db) as user_manager:              
-                    user = await user_manager.create(
+                async with get_user_manager_context(user_db) as user_manager:   
+                    user.available_ask_count = 30         
+                    result = await user_manager.create(
                         UserCreate(
                             **user.dict(),
                         )
                     )
-                    return user
+                    return result
     except Exception as e:
         logger.error(e)
         return None

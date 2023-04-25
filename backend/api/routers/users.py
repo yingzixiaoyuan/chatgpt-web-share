@@ -63,7 +63,6 @@ async def update_limit(limit: LimitSchema, user_id: int = None, _user: User = De
         target_user: User = await session.get(User, user_id)
         if target_user is None:
             raise InvalidParamsException("errors.userNotExist")
-
         for attr, value in limit.dict(exclude_unset=True).items():
             if value is not None:
                 setattr(target_user, attr, value)
