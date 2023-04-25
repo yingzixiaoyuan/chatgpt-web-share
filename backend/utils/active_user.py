@@ -3,7 +3,9 @@ import base64
 import time
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
 from utils.logger import get_logger
+
 logger = get_logger(__name__)
 
 import aiosmtplib
@@ -61,7 +63,7 @@ async def sendMail(receiver_email: str,user_id:int):
             <br>
             &nbsp;&nbsp;您好，我是ai.ikeyi.top站长，欢迎注册使用!<br>
             <br>
-            &nbsp;&nbsp;请点击链接激活您的账号(有效期一天):&nbsp;&nbsp;<a href="{activation_link}">激活链接</a>, 开启智能聊天吧!
+            &nbsp;&nbsp;请点击链接激活您的账号(有效期一天):&nbsp;&nbsp;<a href="{activation_link}" style="background-color: red; color: white; text-decoration: none; display: inline-block;">激活链接</a>, 开启智能聊天吧!
         </div>
         </body>
     </html>
