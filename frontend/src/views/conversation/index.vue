@@ -39,7 +39,7 @@
               </n-icon>
             </template>
             <template #extra>
-              <n-button @click="makeNewConversation">
+              <n-button @click="makeNewConversation" type="error">
                 {{ $t("tips.newConversation") }}
               </n-button>
             </template>
