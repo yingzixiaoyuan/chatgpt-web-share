@@ -33,7 +33,6 @@ def validate_token(token):
         return False
 
 async def sendMail(receiver_email: str,user_id:int):
-    asyncio.sleep(5)
     data = generate_token(user_id)
     token = data.decode()
     activation_link = f"{config.get('frontend_url')}/activate/{token}"
@@ -59,7 +58,7 @@ async def sendMail(receiver_email: str,user_id:int):
     msg.attach(html_part)
     # 登陆并发送邮件
     try:
-        async with aiosmtplib.SMTP(hostname=smtpserver, port=465) as smtp:
+        async with aiosmtplib.SMTP(hostname=smtpserver, port=587, use_tls=True) as smtp:
             await smtp.login(sender, password)
             await smtp.send_message(msg)
             print(f"邮件{receiver_email}发送成功")
