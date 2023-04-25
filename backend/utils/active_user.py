@@ -3,6 +3,8 @@ import base64
 import time
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from utils.logger import get_logger
+logger = get_logger(__name__)
 
 import aiosmtplib
 import api.globals as g
@@ -56,12 +58,14 @@ async def sendMail(receiver_email: str,user_id:int):
     msg["From"] = sender
     msg["To"] = receiver_email
     msg.attach(html_part)
+    logger.info(f'开始发送激活邮件: {receiver_email}...')
     # 登陆并发送邮件
     try:
         async with aiosmtplib.SMTP(hostname=smtpserver, port=587, use_tls=True) as smtp:
             await smtp.login(sender, password)
             await smtp.send_message(msg)
-            print(f"邮件{receiver_email}发送成功")
+            logger.info(f"邮件{receiver_email}发送成功")
     except aiosmtplib.SMTPException as e:
-        print(f"邮件{receiver_email}发送失败！！",e)
+        logger.error(f"邮件{receiver_email}发送失败！！")
+        logger.error(e)
 
