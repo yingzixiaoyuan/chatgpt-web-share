@@ -46,11 +46,28 @@ async def sendMail(receiver_email: str,user_id:int):
     # msg.set_content(f"请点击以下链接激活您的账号(有效期一天)：\n\n{activation_link}")
     html = f"""\
     <html>
-    <body>
-        <p>Hi,请点击以下链接激活您的账号(有效期一天):<br>
-        <a href="{activation_link}">激活链接</a>
-        </p>
-    </body>
+        <head>
+            <meta charset="utf-8">
+            <title>yyy打卡就是看到</title>
+            <style>
+                div{
+                    width: 500px;
+                    height: 120px;
+                    border-style: solid;
+                    border-left-width: 10px;
+                    border-color: #008800;
+                    border-left-style: blue;
+                }
+            </style>
+        </head>
+        <body>
+            <div>
+            <br>
+            &nbsp;&nbsp;您好，我是ai.ikeyi.top站长，欢迎注册使用!<br>
+            <br>
+            &nbsp;&nbsp;请点击链接激活您的账号(有效期一天):&nbsp;&nbsp;<a href="{activation_link}">激活链接</a>, 开启智能聊天吧!
+            </div>
+        </body>
     </html>
     """
     html_part = MIMEText(html, "html")
