@@ -66,5 +66,6 @@ async def sendMail(receiver_email: str,user_id:int):
             await smtp.send_message(msg)
             logger.info(f"邮件{receiver_email}发送成功")
     except aiosmtplib.SMTPException as e:
-        logger.error(f"邮件{receiver_email}发送失败！！",e)
+        logger.error(f"邮件{receiver_email}发送失败！！")
+        logger.error(e)
 
