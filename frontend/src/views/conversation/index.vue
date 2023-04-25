@@ -20,6 +20,7 @@
             <n-menu :content-style="{ backgroundColor: 'red' }" ref="menuRef" :disabled="loadingBar" :options="menuOptions" :root-indent="18"
               v-model:value="currentConversationId"></n-menu>
           </n-scrollbar>
+          <img src="/public.png" alt="关注我们" style="width: 100%; height: auto; transform: scale(0.8); bottom: 0; right: 0;">
         </n-card>
       </div>
       <!-- 右栏 -->
