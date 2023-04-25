@@ -74,7 +74,7 @@ async def update_limit(limit: LimitSchema, user_id: int = None, _user: User = De
         return response(200)
 
 @router.get("/user/{token}/activate", tags=["user"])
-async def active_user( token: str = None):
+async def active_user(token: str = None):
     result = validate_token(token)
     if not result:
         raise InvalidParamsException("errors.invalidToken")

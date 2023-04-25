@@ -1,3 +1,4 @@
+import asyncio
 import contextlib
 from datetime import datetime
 from typing import Any, Optional
@@ -63,8 +64,8 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
         async with get_async_session_context() as session:
             if (await session.execute(select(User).filter(User.username == user_create.username))).scalar_one_or_none():
                 raise api.exceptions.InvalidRequestException("Username already exists")
-            if (await session.execute(select(User).filter(User.email == user_create.email))).scalar_one_or_none():
-                raise api.exceptions.InvalidRequestException("Email already exists")
+            # if (await session.execute(select(User).filter(User.email == user_create.email))).scalar_one_or_none():
+            #     raise api.exceptions.InvalidRequestException("Email already exists")
         return await super().create(user_create, safe, request)
 
     reset_password_token_secret = SECRET
@@ -107,7 +108,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
         if not user.is_superuser:
-            sendMail(receiver_email=user.email,user_id=user.id)
+            asyncio.create_task(sendMail(user.email,user.id))
         print(f"User {user.id} has registered.")
 
     async def on_after_forgot_password(

@@ -1,5 +1,5 @@
 
-import {registeruserApi} from "@/api/register";
+import {registeruserApi,activateuserApi} from "@/api/register";
 import { defineStore } from "pinia";
 import { UserCreate,UserRead } from "@/types/schema";
 import { RegisterUserState } from "../types";
@@ -25,7 +25,7 @@ const useRegisterStore = defineStore("register", {
       } catch (err) {
         throw err
       }
-    },
+    }
   },
 });
 

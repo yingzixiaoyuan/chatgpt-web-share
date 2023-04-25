@@ -100,7 +100,7 @@ function validatePassword(rule: FormItemRule, valPwd: string): boolean {
       regNum = regNum + 1;
     }
   }
-  return regNum >= 3
+  return regNum >= 2
 }
 
 const loginRules = {
@@ -150,7 +150,6 @@ const register = async () => {
       }
   });
 }
-console.log("get console",userStore.user)
   if (userStore.user) {
   router.push({ name: 'conversation' });
 }

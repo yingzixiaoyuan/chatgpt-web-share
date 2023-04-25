@@ -1,9 +1,10 @@
+import asyncio
 import base64
-import smtplib
 import time
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+import aiosmtplib
 import api.globals as g
 from authlib.jose import JoseError, jwt
 
@@ -31,8 +32,8 @@ def validate_token(token):
     except JoseError:
         return False
 
-def sendMail(receiver_email: str,user_id:int):
-    # s = Serializer(config.get("user_secret"), 86400)
+async def sendMail(receiver_email: str,user_id:int):
+    asyncio.sleep(5)
     data = generate_token(user_id)
     token = data.decode()
     activation_link = f"{config.get('frontend_url')}/activate/{token}"
@@ -58,15 +59,10 @@ def sendMail(receiver_email: str,user_id:int):
     msg.attach(html_part)
     # 登陆并发送邮件
     try:
-        with smtplib.SMTP_SSL(smtpserver, 465) as smtp:
-            ##打开调试模式
-            # smtp.set_debuglevel(1)
-            smtp.login(sender, password)
-            smtp.sendmail(sender, receiver_email, msg.as_string())
-    except Exception as e:
-        print("邮件发送失败！！",e)
-    else:
-        print("邮件发送成功")
-    finally:
-        smtp.quit()
+        async with aiosmtplib.SMTP(hostname=smtpserver, port=465) as smtp:
+            await smtp.login(sender, password)
+            await smtp.send_message(msg)
+            print(f"邮件{receiver_email}发送成功")
+    except aiosmtplib.SMTPException as e:
+        print(f"邮件{receiver_email}发送失败！！",e)
 

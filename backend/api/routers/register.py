@@ -1,14 +1,15 @@
-import api.chatgpt
-from api import globals as g
+import asyncio
+
+import api.globals as g
 from api.database import get_async_session_context, get_user_db_context
 from api.exceptions import InvalidParamsException
-from api.models import User
-from api.routers.system import check_users
 from api.schema import UserCreate
-from api.users import (current_active_user, get_by_username,
-                       get_user_manager_context)
-from fastapi import APIRouter, Depends, FastAPI, HTTPException
+from api.users import get_by_username, get_user_manager_context
+from fastapi import APIRouter
+from utils.active_user import sendMail
 from utils.logger import get_logger
+
+config = g.config
 
 logger = get_logger(__name__)
 
