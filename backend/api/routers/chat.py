@@ -266,11 +266,11 @@ async def ask(websocket: WebSocket):
             await websocket.close(1008, "errors.noAvailableGPT4AskCount")
             return
 
-    if api.chatgptapi.chatgpt_manager.is_busy():
-        await websocket.send_json({
-            "type": "queueing",
-            "tip": "tips.queueing"
-        })
+    # if api.chatgptapi.chatgpt_manager.is_busy():
+    #     await websocket.send_json({
+    #         "type": "queueing",
+    #         "tip": "tips.queueing"
+    #     })
 
     websocket_code = 1001
     websocket_reason = "tips.terminated"
@@ -286,91 +286,99 @@ async def ask(websocket: WebSocket):
         if url and url in msg:
             return msg.replace(url, "<chatgpt_base_url>")
 
-    try:
+    # try:
         # 标记用户为 queueing
-        await change_user_chat_status(user.id, ChatStatus.queueing)
-        is_queueing = True
-        queueing_start_time = time.time()
-        async with api.chatgptapi.chatgpt_manager.semaphore:
-            is_queueing = False
-            try:
-                await change_user_chat_status(user.id, ChatStatus.asking)
-                await websocket.send_json({
-                    "type": "waiting",
-                    "tip": "tips.waiting"
-                })
-                ask_start_time = time.time()
-                api.chatgptapi.chatgpt_manager.reset_chat()
-                data,conversation_id,_model_name  = await api.chatgptapi.chatgpt_manager.ask(message, conversation_id, parent_id, timeout,model_name)
-                has_got_reply = True
-                
-                reply = {
-                    "type": "message",
-                    "message": data,
-                    "conversation_id":conversation_id,
-                    "parent_id": str(uuid.uuid4()),
-                    "model_name": _model_name,
-                }
-                await websocket.send_json(reply)
-                if conversation_id is None:
-                    conversation_id = conversation_id
-                is_completed = True
-            except Exception as e:
-                # 修复 message 为 None 时的错误
-                if str(e).startswith("Field missing"):
-                    logger.warning(str(e))
-                else:
-                    raise e
-            finally:
-                api.chatgptapi.chatgpt_manager.reset_chat()
-
-    except ConnectionClosed as e :
-        print("get close",e)
-        # print("websocket aborted", e.code)
-        is_canceled = True
-    except requests.exceptions.Timeout:
-        logger.warning(str(e))
+        # await change_user_chat_status(user.id, ChatStatus.queueing)
+        # is_queueing = True
+        
+        # async with api.chatgptapi.chatgpt_manager.semaphore:
+        #     is_queueing = False
+    queueing_start_time = time.time()
+    try:
+        # await change_user_chat_status(user.id, ChatStatus.asking)
         await websocket.send_json({
-            "type": "error",
-            "tip": "errors.timeout"
+            "type": "waiting",
+            "tip": "tips.waiting"
         })
-        websocket_code = 1001
-        websocket_reason = "errors.timout"
-    except revChatGPTError as e:
-        logger.error(str(e))
-        message = check_message(f"{e.source} {e.code}: {e.message}")
-        await websocket.send_json({
-            "type": "error",
-            "tip": "errors.chatgptResponseError",
-            "message": message
-        })
-        websocket_code = 1001
-        websocket_reason = "errors.chatgptResponseError"
-    except HTTPError as e:
-        logger.error(str(e))
-        message = check_message(str(e))
-        await websocket.send_json({
-            "type": "error",
-            "tip": "errors.httpError",
-            "message": message
-        })
-        websocket_code = 1014
-        websocket_reason = "errors.httpError"
+        ask_start_time = time.time()
+        api.chatgptapi.chatgpt_manager.reset_chat()
+        data,conversation_id,_model_name  = await api.chatgptapi.chatgpt_manager.ask(message, conversation_id, parent_id, timeout,model_name)
+        has_got_reply = True
+        
+        reply = {
+            "type": "message",
+            "message": data,
+            "conversation_id":conversation_id,
+            "parent_id": str(uuid.uuid4()),
+            "model_name": _model_name,
+        }
+        await websocket.send_json(reply)
+        if conversation_id is None:
+            conversation_id = conversation_id
+        is_completed = True
     except Exception as e:
-        logger.error(str(e))
-        message = check_message(str(e))
-        await websocket.send_json({
-            "type": "error",
-            "tip": "errors.unknownError",
-            "message": message
-        })
-        websocket_code = 1011
-        websocket_reason = "errors.unknownError"
+        # 修复 message 为 None 时的错误
+        is_canceled = True
+        if str(e).startswith("Field missing"):
+            logger.warning(str(e))
+        else:
+            # message = check_message(f"{e.source} {e.code}: {e.message}")
+            await websocket.send_json({
+                "type": "error",
+                "tip": "errors.chatgptResponseError",
+                "message": message
+            })
+            # raise e
+    finally:
+        api.chatgptapi.chatgpt_manager.reset_chat()
+
+    # except ConnectionClosed as e :
+    #     print("get close",e)
+    #     # print("websocket aborted", e.code)
+    #     is_canceled = True
+    # except requests.exceptions.Timeout:
+    #     logger.warning(str(e))
+    #     await websocket.send_json({
+    #         "type": "error",
+    #         "tip": "errors.timeout"
+    #     })
+    #     websocket_code = 1001
+    #     websocket_reason = "errors.timout"
+    # except revChatGPTError as e:
+    #     logger.error(str(e))
+    #     message = check_message(f"{e.source} {e.code}: {e.message}")
+    #     await websocket.send_json({
+    #         "type": "error",
+    #         "tip": "errors.chatgptResponseError",
+    #         "message": message
+    #     })
+    #     websocket_code = 1001
+    #     websocket_reason = "errors.chatgptResponseError"
+    # except HTTPError as e:
+    #     logger.error(str(e))
+    #     message = check_message(str(e))
+    #     await websocket.send_json({
+    #         "type": "error",
+    #         "tip": "errors.httpError",
+    #         "message": message
+    #     })
+    #     websocket_code = 1014
+    #     websocket_reason = "errors.httpError"
+    # except Exception as e:
+    #     logger.error(str(e))
+    #     message = check_message(str(e))
+    #     await websocket.send_json({
+    #         "type": "error",
+    #         "tip": "errors.unknownError",
+    #         "message": message
+    #     })
+    #     websocket_code = 1011
+    #     websocket_reason = "errors.unknownError"
 
     ask_stop_time = time.time()
 
     queueing_time = ask_stop_time - queueing_start_time
-    queueing_time = round(queueing_time, 3)
+    # queueing_time = round(queueing_time, 3)
     if ask_start_time is not None:
         ask_time = ask_stop_time - ask_start_time
         ask_time = round(ask_time, 3)
@@ -388,10 +396,6 @@ async def ask(websocket: WebSocket):
             logger.debug(
                 f"canceled ask {conversation_id} ({model_name}) while replying, user: {user.id}, "
                 f"ask: {ask_time}s, total: {queueing_time}s")
-        elif is_queueing:
-            logger.debug(
-                f"canceled ask {conversation_id} ({model_name}) while queueing, user: {user.id}, "
-                f"total: {queueing_time}s")
         else:
             logger.debug(
                 f"canceled ask {conversation_id} ({model_name}) before replying, user: {user.id}, "
@@ -447,5 +451,5 @@ async def ask(websocket: WebSocket):
     except Exception as e:
         raise e
     finally:
-        await change_user_chat_status(user.id, ChatStatus.idling)
+        # await change_user_chat_status(user.id, ChatStatus.idling)
         await websocket.close(websocket_code, websocket_reason)

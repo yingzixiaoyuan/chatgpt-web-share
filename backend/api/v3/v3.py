@@ -227,7 +227,6 @@ class Chatbot:
             if line == "[DONE]":
                 break
             resp: dict = json.loads(line)
-            usage = resp.get("usage")
             choices = resp.get("choices")
             if not choices:
                 continue
@@ -292,7 +291,6 @@ class Chatbot:
                 raise t.APIConnectionError(
                     f"{response.status_code} {response.reason_phrase} {response.text}",
                 )
-
             response_role: str = ""
             full_response: str = ""
             async for line in response.aiter_lines():
