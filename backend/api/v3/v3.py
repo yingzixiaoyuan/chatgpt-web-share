@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import sys
@@ -258,13 +259,16 @@ class Chatbot:
         self.add_to_conversation(prompt, "user", convo_id=convo_id)
         self.__truncate_conversation(convo_id=convo_id)
         # Get response
+        new_msg = copy.deepcopy(self.conversation[convo_id])
+        if len(self.conversation[convo_id]) >=4:
+             new_msg = [new_msg[0]] + new_msg[-3:]
         async with self.aclient.stream(
             "post",
             os.environ.get("API_URL") or "https://api.openai.com/v1/chat/completions",
             headers={"Authorization": f"Bearer {kwargs.get('api_key', self.api_key)}"},
             json={
                 "model": self.engine,
-                "messages": self.conversation[convo_id],
+                "messages": new_msg,
                 "stream": True,
                 # kwargs
                 "temperature": kwargs.get("temperature", self.temperature),
@@ -310,7 +314,6 @@ class Chatbot:
                     response_role = delta["role"]
                 if "content" in delta:
                     content: str = delta["content"]
-                    # print("get xiao",resp)
                     full_response += content
                     yield content
                 # usage = resp.get("usage",None)
