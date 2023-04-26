@@ -1,6 +1,6 @@
 #!/bin/bash
 
-kill `ps -ef | grep 'python main.py'| grep -v grep | awk '{print $2}'`
+kill `ps -ef | grep 'uvicorn main:app'| grep -v grep | awk '{print $2}'`
 cd /data2/chatgpt-web-share/backend
 source ../venv/bin/activate
-nohup python main.py &
+nohup uvicorn main:app --workers 4 &
