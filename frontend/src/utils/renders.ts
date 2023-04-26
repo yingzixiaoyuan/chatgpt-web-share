@@ -114,7 +114,7 @@ const popupInputDialog = (
 const getAvailableModelOptions = (): SelectOption[] => {
   const userStore = useUserStore();
   let options = [
-    { label: t("commons.shaModel"), value: "text-davinci-002-render-sha" },
+    { label: t("commons.shaModel"), value: "gpt-3.5-turbo-0301" },
   ];
   if (userStore.user?.can_use_paid)
     options.push({

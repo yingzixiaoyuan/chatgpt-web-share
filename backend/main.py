@@ -141,13 +141,14 @@ async def on_startup():
     async def dump_stats():
         utils.store_statistics.dump(print_log=False)
 
-    if config.get("sync_conversations_regularly", True):
-        logger.info("Sync conversations regularly enabled, will sync conversations every 12 hours.")
+    # 关闭同步
+    # if config.get("sync_conversations_regularly", True):
+    #     logger.info("Sync conversations regularly enabled, will sync conversations every 12 hours.")
 
-        # 默认每隔 12 小时同步一次
-        @aiocron.crontab('0 */12 * * *', loop=asyncio.get_event_loop())
-        async def sync_conversations_regularly():
-            await sync_conversations()
+    #     # 默认每隔 12 小时同步一次
+    #     @aiocron.crontab('0 */12 * * *', loop=asyncio.get_event_loop())
+    #     async def sync_conversations_regularly():
+    #         await sync_conversations()
 
 
 # 关闭时
