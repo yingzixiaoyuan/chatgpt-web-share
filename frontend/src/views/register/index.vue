@@ -108,7 +108,7 @@ function validatePasswordSame (rule: FormItemRule, value: string): boolean {
 }
 
 function validatePassword(rule: FormItemRule, valPwd: string): boolean {
-  if (valPwd.length < 8) {
+  if (valPwd.length < 6) {
       return false
     } 
   let arrVerify = [

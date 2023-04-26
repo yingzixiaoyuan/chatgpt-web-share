@@ -145,7 +145,7 @@
     "activeUser": "注册账号成功,请前往邮箱中点击激活链接激活账号",
     "loginExpired": "登录已过期。是否跳转到登录页面？",
     "pleaseEnterUsername": "请输入用户名",
-    "pleaseEnterPassword": "密码长度至少8位,必须包含大小写字母和数字",
+    "pleaseEnterPassword": "密码长度至少6位,必须包含大小写字母和数字",
     "waiting": "正在思考中...",
     "queueing": "正在回复其他用户，排队中...",
     "deleteConversation": "确定要删除该会话吗？将无法找回历史记录！",
