@@ -40,6 +40,15 @@
         <n-button type="primary" @click="register" :enabled="loading" style="margin-left:10px">{{ $t("commons.register") }}</n-button>
       </n-form-item>
     </n-form>
+    <n-modal 
+      :show="showModal"
+      style="width: 600px"
+      preset="dialog"
+      title="确认"
+      size="huge"
+      :bordered="false">
+      {{t('tips.activeUser')}} {{ timeout / 1000 }} 秒之后跳转到登录页面
+  </n-modal>
   </div>
 </template>
 
@@ -54,10 +63,24 @@ import { Message } from '@/utils/tips';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store';
 
-const userStore = useUserStore();
-
 const router = useRouter();
 
+const timeoutRef = ref(5000)
+const showModalRef = ref(false)
+const countdown = () => {
+  if (timeoutRef.value <= 0) {
+    showModalRef.value = false
+    router.push({ name: 'login' });
+  } else {
+    timeoutRef.value -= 1000
+    setTimeout(countdown, 1000)
+  }
+}
+
+const showModal=showModalRef
+const timeout= timeoutRef
+
+const userStore = useUserStore();
 const RegisterStore = useRegisterStore();
 const formRef = ref<FormInst>();
 
@@ -138,10 +161,9 @@ const register = async () => {
     try { 
         await RegisterStore.register(formValue as unknown as  UserCreate);
         if (RegisterStore.userInfo){
-          Message.success(t('tips.activeUser')+'3秒之后跳转到登录页面');
-          setTimeout(function(){
-            router.push({ name: 'login' });
-          },3000);
+          showModalRef.value = true
+          timeoutRef.value = 6000
+          countdown()
         }
       } catch (error) {
         console.log(error);
