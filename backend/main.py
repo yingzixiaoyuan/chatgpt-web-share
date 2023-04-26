@@ -26,7 +26,7 @@ from api.models import Conversation, User
 from api.response import (CustomJSONResponse, PrettyJSONResponse,
                           handle_exception_response)
 from api.routers import chat, register, status, system, users
-from utils.create_user import create_user
+from utils.create_user import create_user, reset_user_count
 from utils.logger import get_log_config, get_logger, setup_logger
 from utils.proxy import close_reverse_proxy
 from utils.sync_conversations import sync_conversations
@@ -135,11 +135,16 @@ async def on_startup():
         logger.info("Sync conversations on startup disabled. Jumping...")
         return  # 跳过同步对话
     else:
-        await sync_conversations()
+        pass
+        # await sync_conversations()
 
     @aiocron.crontab('*/5 * * * *', loop=asyncio.get_event_loop())
     async def dump_stats():
         utils.store_statistics.dump(print_log=False)
+    
+    @aiocron.crontab('59 23 * * *', loop=asyncio.get_event_loop())
+    async def reset_user_count_cron():
+        await reset_user_count()
 
     # 关闭同步
     # if config.get("sync_conversations_regularly", True):

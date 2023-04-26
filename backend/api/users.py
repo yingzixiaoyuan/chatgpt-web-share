@@ -11,6 +11,7 @@ from fastapi_users.authentication import (AuthenticationBackend,
                                           CookieTransport, JWTStrategy)
 from fastapi_users.models import UP
 from sqlalchemy import Integer, select
+from sqlalchemy.sql import text
 from starlette.websockets import WebSocket
 from utils.active_user import sendMail
 from utils.logger import get_logger
@@ -64,8 +65,8 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
         async with get_async_session_context() as session:
             if (await session.execute(select(User).filter(User.username == user_create.username))).scalar_one_or_none():
                 raise api.exceptions.InvalidRequestException("Username already exists")
-            # if (await session.execute(select(User).filter(User.email == user_create.email))).scalar_one_or_none():
-            #     raise api.exceptions.InvalidRequestException("Email already exists")
+            if (await session.execute(select(User).filter(User.email == user_create.email))).scalar_one_or_none():
+                raise api.exceptions.InvalidRequestException("Email already exists")
         return await super().create(user_create, safe, request)
 
     reset_password_token_secret = SECRET
@@ -122,6 +123,11 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
         print(
             f"Verification requested for user {user.id}. Verification token: {token}")
 
+    async def reset_user_count(self):
+        async with get_async_session_context() as session:
+            await session.execute(text("UPDATE user SET available_ask_count = 30 WHERE username NOT IN ('admin', 'test')"))
+            await session.commit()
+            await session.close()
 
 async def websocket_auth(websocket: WebSocket) -> User | None:
     user = None
