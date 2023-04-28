@@ -31,6 +31,7 @@ async def reset_user_count():
             async with get_user_db_context(session) as db:
                 async with get_user_manager_context(db) as user_manager:
                     await user_manager.reset_user_count()
+                    await user_manager.reset_test_count()
                     logger.info(f"Reset User count")
                     return True
     except Exception as e:

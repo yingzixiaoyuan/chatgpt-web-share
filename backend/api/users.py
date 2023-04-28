@@ -123,6 +123,12 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
         print(
             f"Verification requested for user {user.id}. Verification token: {token}")
 
+    async def reset_test_count(self):
+        async with get_async_session_context() as session:
+            await session.execute(text("UPDATE user SET available_ask_count = 1000 WHERE username ='test')"))
+            await session.commit()
+            await session.close()
+
     async def reset_user_count(self):
         async with get_async_session_context() as session:
             await session.execute(text("UPDATE user SET available_ask_count = 30 WHERE username NOT IN ('admin', 'test')"))
