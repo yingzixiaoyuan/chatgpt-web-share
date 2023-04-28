@@ -142,7 +142,6 @@
     "internal": "内部错误"
   },
   "tips": {
-    // "activeUser": "登录邮箱，查收激活邮件，点击激活链接。",
     "activeUser": "注册成功！请登录系统开启智能聊天之旅吧~~",
     "loginExpired": "登录已过期。是否跳转到登录页面？",
     "pleaseEnterUsername": "请输入用户名",
