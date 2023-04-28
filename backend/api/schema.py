@@ -48,7 +48,7 @@ class UserCreate(schemas.BaseUserCreate):
     can_use_paid: bool = False
     max_conv_count: int = -1
     available_ask_count: int = -1
-    is_active: bool = False
+    is_active: bool = True
 
     class Config:
         orm_mode = True

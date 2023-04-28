@@ -161,9 +161,10 @@ const register = async () => {
     try { 
         await RegisterStore.register(formValue as unknown as  UserCreate);
         if (RegisterStore.userInfo){
-          showModalRef.value = true
-          timeoutRef.value = 6000
-          countdown()
+          router.push({ name: 'login' });
+          // showModalRef.value = true
+          // timeoutRef.value = 6000
+          // countdown()
         }
       } catch (error) {
         console.log(error);
