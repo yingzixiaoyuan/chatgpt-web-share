@@ -108,8 +108,8 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
         return user
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
-        if not user.is_superuser:
-            asyncio.create_task(sendMail(user.email,user.id))
+        # if not user.is_superuser:
+        #     asyncio.create_task(sendMail(user.email,user.id))
         print(f"User {user.id} has registered.")
 
     async def on_after_forgot_password(
