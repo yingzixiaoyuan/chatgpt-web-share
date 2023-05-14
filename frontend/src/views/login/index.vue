@@ -18,8 +18,8 @@
       </n-form-item>
     </n-form>
   </div>
-
-  <div id="content">
+  <n-card :bordered="false">
+    <div id="content">
   &nbsp;&nbsp;Aichat火爆ing🔥🔥, 共享key大家免费使用。<br>
   &nbsp;&nbsp;为防止部分同学恶意刷问题浪费资源，提供了邮箱注册登录功能。<br>
   &nbsp;&nbsp;不注册:可通过test:test账户进行试用,每天限额1000次,人多可能很快用完。<br>
@@ -31,7 +31,7 @@
   <div style="text-align: center;">
   <img src="/QRcode.jpg" width="200" height="150" style="max-width: 100%; max-height: 100%;">
 </div>
-
+  </n-card>
 </template>
 
 <script setup lang="ts">
