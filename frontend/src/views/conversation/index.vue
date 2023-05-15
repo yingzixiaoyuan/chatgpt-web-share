@@ -4,7 +4,7 @@
     <div class="h-full flex flex-col md:flex-row md:space-x-4">
       <!-- 左栏 -->
       <div class="md:w-1/4 md:min-w-1/4 w-full flex flex-col space-y-4 md:h-full">
-        <StatusCard />
+        <!-- <StatusCard /> -->
         <n-card class="flex-col left-col" content-style="padding: 4px;">
           <div class="flex box-content m-2" v-if="!newConversation">
             <n-button secondary strong type="primary" class="flex-1" @click="makeNewConversation" :disabled="loadingBar">
@@ -20,7 +20,7 @@
             <n-menu :content-style="{ backgroundColor: 'red' }" ref="menuRef" :disabled="loadingBar" :options="menuOptions" :root-indent="18"
               v-model:value="currentConversationId"></n-menu>
           </n-scrollbar>
-          <img src="/public_code.png" alt="关注我们" style="width: 100%; height: auto; transform: scale(0.8); bottom: 0; right: 0;">
+          <img v-if=!isMobileScreenResult src="/public_code.png" alt="关注我们" style="width: 100%; height: auto; transform: scale(0.8); bottom: 0; right: 0;">
         </n-card>
       </div>
       <!-- 右栏 -->
@@ -595,8 +595,15 @@ const exportToPdfFile = () => {
 // 加载对话列表
 conversationStore.fetchAllConversations().then(() => {
 })
-
-
+// 判断是否是手机屏幕
+const isMobileScreenResult = ref<boolean>(false);
+const isMobileScreen = () =>  {
+  return window.matchMedia('(max-width: 768px)').matches;
+}
+if (isMobileScreen()) {
+  isMobileScreenResult.value = true;
+  console.log('mobile screen', isMobileScreenResult.value);
+}
 </script>
 
 <style>
