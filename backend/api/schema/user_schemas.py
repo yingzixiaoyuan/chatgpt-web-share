@@ -1,13 +1,13 @@
 import datetime
-from typing import TypeVar, Generic, Type, Optional
+from typing import Generic, Optional, Type, TypeVar
 
+from api.enums import ApiChatModels, RevChatModels, RevChatStatus
+from api.models.json import (ApiPerModelAskCount, CustomOpenaiApiSettings,
+                             DailyTimeSlot, RevPerModelAskCount,
+                             TimeWindowRateLimit)
 from fastapi_users import schemas
 from pydantic import BaseModel, EmailStr
 from pydantic.generics import GenericModel
-
-from api.enums import RevChatStatus, RevChatModels, ApiChatModels
-from api.models.json import CustomOpenaiApiSettings, TimeWindowRateLimit, DailyTimeSlot, \
-    RevPerModelAskCount, ApiPerModelAskCount
 
 ModelT = TypeVar('ModelT', bound=RevChatModels | ApiChatModels)
 
@@ -25,7 +25,7 @@ class BaseSourceSettingSchema(BaseModel):
         return BaseSourceSettingSchema(
             allow_to_use=True,
             valid_until=None,
-            max_conv_count=10,
+            max_conv_count=30,
             total_ask_count=0,
             rate_limits=[],
             daily_available_time_slots=[DailyTimeSlot(start_time=datetime.time(0, 0, 0),

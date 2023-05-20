@@ -13,22 +13,21 @@ from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-
-from api.conf import Config
 import api.globals as g
-
-from api.database import create_db_and_tables, get_async_session_context, get_user_db_context, init_mongodb
+from api.conf import Config
+from api.database import (create_db_and_tables, get_async_session_context,
+                          get_user_db_context, init_mongodb)
 from api.enums import RevChatStatus
 from api.exceptions import SelfDefinedException, UserAlreadyExists
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
 from api.models.db import User
 from api.response import CustomJSONResponse, handle_exception_response
-from api.routers import users, conv, chat, system, status
+from api.routers import chat, conv, register, status, system, users
 from api.schema import UserCreate, UserSettingSchema
 from api.sources import RevChatGPTManager
 from api.users import get_user_manager_context
 from utils.admin import sync_conversations
-from utils.logger import setup_logger, get_log_config, get_logger
+from utils.logger import get_log_config, get_logger, setup_logger
 from utils.stats import dump_stats, load_stats
 
 config = Config()
@@ -50,6 +49,7 @@ app.include_router(conv.router)
 app.include_router(chat.router)
 app.include_router(system.router)
 app.include_router(status.router)
+app.include_router(register.router)
 
 # 解决跨站问题
 app.add_middleware(
