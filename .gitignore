@@ -2,3 +2,4 @@ docker/
 .vscode/
 .DS_Store
 *.yaml
+backend/data/credentials.yaml
