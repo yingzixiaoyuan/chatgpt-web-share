@@ -30,7 +30,7 @@ const availableChatSourceTypes = computed<SelectOption[]>(() => {
     return [];
   }
   return [
-    {label: t('labels.rev'), value: 'rev', disabled: !userStore.user.setting.rev.allow_to_use},
+    // {label: t('labels.rev'), value: 'rev', disabled: !userStore.user.setting.rev.allow_to_use},
     {label: t('labels.api'), value: 'api', disabled: !userStore.user.setting.api.allow_to_use},
   ];
 });
