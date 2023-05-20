@@ -23,6 +23,17 @@
           :root-indent="18"
         />
       </n-scrollbar>
+      <n-image
+        src="/public_code.png" alt="关注我们"
+        style="
+          overflow: auto;
+          height: 100px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        "
+        :previewed-img-props="{ style: { border: '8px solid white' } }"
+      />
     </div>
   </div>
 </template>
