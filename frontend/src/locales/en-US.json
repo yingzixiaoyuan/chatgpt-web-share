@@ -1,5 +1,6 @@
 {
   "commons": {
+    "register": "Register",
     "notLogin": "Not logged in",
     "siteTitle": "ChatGPT",
     "confirm": "Confirm",

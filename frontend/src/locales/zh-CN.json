@@ -1,5 +1,6 @@
 {
   "commons": {
+    "register": "注册",
     "notLogin": "未登录",
     "siteTitle": "ChatGPT",
     "confirm": "确定",
