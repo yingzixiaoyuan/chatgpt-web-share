@@ -447,6 +447,17 @@ const exportToPdfFile = () => {
 
 // 加载对话列表
 conversationStore.fetchAllConversations().then();
+// 判断是否是手机屏幕
+const isMobileScreenResult = ref<boolean>(false);
+const isMobileScreen = () =>  {
+  return window.matchMedia('(max-width: 768px)').matches;
+}
+if (isMobileScreen()) {
+  // isMobileScreenResult.value = true;
+  foldLeftBar.value = true;
+  
+  console.log('mobile screen', isMobileScreenResult.value,foldLeftBar.value);
+}
 </script>
 
 <style>

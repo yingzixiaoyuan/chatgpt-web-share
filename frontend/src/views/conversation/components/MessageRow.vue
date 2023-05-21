@@ -173,7 +173,6 @@ const backgroundColor = computed(() => {
 
 const content = computed(() => {
   const message = props.message;
-  console.log("get front history",getContentRawText(message))
   return getContentRawText(message);
 });
 

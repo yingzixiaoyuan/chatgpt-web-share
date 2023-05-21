@@ -102,6 +102,10 @@ const menuOptions = computed<MenuOption[]>(() => {
       disabled: props.loading == true,
     });
   }
+  if (results.length > 0) {
+    convId.value = results[0].key
+  }
+  console.log("get all conversion",results,convId.value)
   return results;
 });
 
