@@ -1,10 +1,9 @@
 import datetime
-from typing import Optional, Generic, TypeVar, get_args
+from typing import Generic, Optional, TypeVar, get_args
 
+from api.enums import ApiChatModels, RevChatModels
 from pydantic import BaseModel, Field, create_model, root_validator
 from pydantic.generics import GenericModel
-
-from api.enums import RevChatModels, ApiChatModels
 
 ModelT = TypeVar('ModelT', bound=RevChatModels | ApiChatModels)
 
@@ -30,7 +29,7 @@ class ApiPerModelAskCount(BaseModel):
 
     @staticmethod
     def default():
-        return ApiPerModelAskCount(gpt_3_5=0, gpt_4=0)
+        return ApiPerModelAskCount(gpt_3_5=30, gpt_4=0)
 
     @staticmethod
     def unlimited():

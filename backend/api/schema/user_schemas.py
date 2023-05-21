@@ -26,7 +26,7 @@ class BaseSourceSettingSchema(BaseModel):
             allow_to_use=True,
             valid_until=None,
             max_conv_count=30,
-            total_ask_count=0,
+            total_ask_count=30,
             rate_limits=[],
             daily_available_time_slots=[DailyTimeSlot(start_time=datetime.time(0, 0, 0),
                                                       end_time=datetime.time(23, 59, 59))]
