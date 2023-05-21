@@ -5,18 +5,23 @@ from typing import Any, Optional, Union
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi_users import BaseUserManager, FastAPIUsers, models, IntegerIDMixin, InvalidID
-from fastapi_users.authentication import CookieTransport, AuthenticationBackend, JWTStrategy
+from fastapi_users import (BaseUserManager, FastAPIUsers, IntegerIDMixin,
+                           InvalidID, models)
+from fastapi_users.authentication import (AuthenticationBackend,
+                                          CookieTransport, JWTStrategy)
 from fastapi_users.models import UP
-from sqlalchemy import select, Integer, inspect
+from sqlalchemy import Integer, inspect, select
+from sqlalchemy.sql import text
 from starlette.websockets import WebSocket
+from utils.logger import get_logger
 
 import api.exceptions
 from api.conf import Config
-from api.database import get_user_db, get_async_session_context, get_user_db_context
+from api.database import (get_async_session_context, get_user_db,
+                          get_user_db_context)
 from api.models.db import User, UserSetting
-from api.schema import UserCreate, UserSettingSchema, UserUpdate, UserUpdateAdmin
-from utils.logger import get_logger
+from api.schema import (UserCreate, UserSettingSchema, UserUpdate,
+                        UserUpdateAdmin)
 
 logger = get_logger(__name__)
 config = Config()
@@ -121,6 +126,25 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
             await session.commit()
             await session.refresh(user)
             return user
+
+    async def reset_test_count(self):
+        async with get_async_session_context() as session:
+            user = (await session.execute(select(User).filter(User.username == "test") )).scalar_one_or_none()
+            if user:
+                query = f"UPDATE user_setting SET api = json_set(api, '$.per_model_ask_count.gpt_3_5', 1000,'$.total_ask_count',1000) WHERE user_id = {user.id}"
+                await session.execute(text(query))
+                await session.commit()
+                await session.close()
+
+    async def reset_user_count(self):
+        async with get_async_session_context() as session:
+            user = (await session.execute(select(User).filter(User.username.in_(["admin","test"]) ))).scalars().all()
+            ids = ",".join([str(x.id) for x in user])
+            if user:
+                query = f"UPDATE user_setting SET api = json_set(api, '$.per_model_ask_count.gpt_3_5', 30,'$.total_ask_count',30) WHERE user_id NOT IN ({ids})"
+                await session.execute(text(query))
+                await session.commit()
+                await session.close()
 
     reset_password_token_secret = SECRET
     verification_token_secret = SECRET

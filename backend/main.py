@@ -28,6 +28,7 @@ from api.sources import RevChatGPTManager
 from api.users import get_user_manager_context
 from utils.admin import sync_conversations
 from utils.logger import get_log_config, get_logger, setup_logger
+from utils.reset import reset_user_count
 from utils.stats import dump_stats, load_stats
 
 config = Config()
@@ -138,6 +139,10 @@ async def on_startup():
     @aiocron.crontab('*/5 * * * *', loop=asyncio.get_event_loop())
     async def cron_dump_stats():
         dump_stats(print_log=False)
+
+    @aiocron.crontab('* * * * *', loop=asyncio.get_event_loop())
+    async def reset_user_count_cron():
+        await reset_user_count()
 
     if config.common.sync_conversations_regularly:
         logger.info("Sync conversations regularly enabled, will sync conversations every 12 hours.")
