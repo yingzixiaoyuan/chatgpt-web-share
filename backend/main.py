@@ -140,7 +140,7 @@ async def on_startup():
     async def cron_dump_stats():
         dump_stats(print_log=False)
 
-    @aiocron.crontab('* * * * *', loop=asyncio.get_event_loop())
+    @aiocron.crontab('59 23 * * *', loop=asyncio.get_event_loop())
     async def reset_user_count_cron():
         await reset_user_count()
 
