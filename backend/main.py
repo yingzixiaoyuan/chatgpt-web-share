@@ -22,13 +22,12 @@ from api.exceptions import SelfDefinedException, UserAlreadyExists
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
 from api.models.db import User
 from api.response import CustomJSONResponse, handle_exception_response
-from api.routers import chat, conv, register, status, system, users
+from api.routers import chat, conv, status, system, users
 from api.schema import UserCreate, UserSettingSchema
 from api.sources import RevChatGPTManager
 from api.users import get_user_manager_context
 from utils.admin import sync_conversations
 from utils.logger import get_log_config, get_logger, setup_logger
-from utils.reset import reset_user_count
 from utils.stats import dump_stats, load_stats
 
 config = Config()
@@ -42,7 +41,7 @@ app = FastAPI(
     middleware=[
         Middleware(AccessLoggerMiddleware, format='%(client_addr)s | %(request_line)s | %(status_code)s | %(M)s ms',
                    logger=get_logger("access")),
-        Middleware(StatisticsMiddleware)]
+        Middleware(StatisticsMiddleware, filter_keywords=config.stats.request_stats_filter_keywords)]
 )
 
 app.include_router(users.router)
@@ -88,8 +87,6 @@ async def on_startup():
     await init_mongodb()
 
     g.startup_time = time.time()
-
-    load_stats()
 
     # 初始化 chatgpt_manager
     g.chatgpt_manager = RevChatGPTManager()
@@ -140,10 +137,6 @@ async def on_startup():
     async def cron_dump_stats():
         dump_stats(print_log=False)
 
-    @aiocron.crontab('59 23 * * *', loop=asyncio.get_event_loop())
-    async def reset_user_count_cron():
-        await reset_user_count()
-
     if config.common.sync_conversations_regularly:
         logger.info("Sync conversations regularly enabled, will sync conversations every 12 hours.")
 
@@ -157,8 +150,6 @@ async def on_startup():
 @app.on_event("shutdown")
 async def on_shutdown():
     logger.info("On shutdown...")
-    # close_reverse_proxy()
-    dump_stats()
 
 
 # @api.get("/routes")

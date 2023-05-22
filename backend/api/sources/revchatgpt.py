@@ -15,7 +15,7 @@ from api.exceptions import InvalidParamsException
 from api.models.doc import RevChatMessageMetadata, RevConversationHistoryDocument, \
     RevConversationHistoryExtra, RevChatMessage, RevChatMessageTextContent, RevChatMessageCodeContent, \
     RevChatMessageTetherBrowsingDisplayContent, RevChatMessageTetherQuoteContent, RevChatMessageContent
-from api.schema.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
+from api.schemas.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
 
@@ -27,8 +27,8 @@ logger = get_logger(__name__)
 def convert_revchatgpt_message(item: dict, message_id: str = None) -> RevChatMessage | None:
     if not item.get("message"):
         return None
-    if not not item["message"].get("author"):
-        logger.debug(f"Parse message: Unknown author {item['message']['author']}")
+    if not item["message"].get("author"):
+        logger.debug(f"Parse message {message_id}: Unknown author")
 
     content = None
     fallback_content = None
@@ -148,8 +148,16 @@ class RevChatGPTManager:
         return self.semaphore.locked()
 
     async def get_conversations(self):
-        conversations = await self.chatbot.get_conversations(limit=80)
-        return conversations
+        all_conversations = []
+        offset = 0
+        while True:
+            conversations = await self.chatbot.get_conversations(offset = offset, limit = 80)
+            if len(conversations):
+                all_conversations.extend(conversations)
+            else:
+                break
+            offset += 80
+        return all_conversations 
 
     async def get_conversation_history(self, conversation_id: uuid.UUID | str,
                                        refresh=True) -> RevConversationHistoryDocument:
