@@ -68,11 +68,6 @@ const emits = defineEmits<{
 // get and set to bind convId and value
 const convId = computed<string | null>({
   get() {
-    console.log(props.value)
-    // if (props.value == null) {
-    //   console.log(conversationStore.conversations?.[0]?.conversation_id )
-    //   return conversationStore.conversations?.[0]?.conversation_id || null;
-    // }
     return props.value;
   },
   set(value: string | null) {
