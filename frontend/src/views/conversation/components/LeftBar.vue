@@ -68,6 +68,11 @@ const emits = defineEmits<{
 // get and set to bind convId and value
 const convId = computed<string | null>({
   get() {
+    console.log(props.value)
+    // if (props.value == null) {
+    //   console.log(conversationStore.conversations?.[0]?.conversation_id )
+    //   return conversationStore.conversations?.[0]?.conversation_id || null;
+    // }
     return props.value;
   },
   set(value: string | null) {
@@ -103,9 +108,10 @@ const menuOptions = computed<MenuOption[]>(() => {
     });
   }
   if (results.length > 0) {
-    convId.value = results[0].key
+    if (!convId.value){
+      convId.value = results[0].key
+    }
   }
-  console.log("get all conversion",results,convId.value)
   return results;
 });
 
