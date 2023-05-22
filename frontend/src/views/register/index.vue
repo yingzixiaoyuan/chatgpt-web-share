@@ -115,7 +115,8 @@ function validatePassword(rule: FormItemRule, valPwd: string): boolean {
     {regName: 'Number', regValue: /^.*[0-9]+.*/},
     {regName: 'LowerCase', regValue: /^.*[a-z]+.*/},
     {regName: 'UpperCase', regValue: /^.*[A-Z]+.*/},
-    {regName: 'SpecialCharacters', regValue: /^.*[^a-zA-Z0-9]+.*/}
+    // {regName: 'SpecialCharacters', regValue: /^.*[^a-zA-Z0-9]+.*/}
+    {regName: 'SpecialCharacters', regValue: /[!@#$%^&*(),.?":{}|<>]/}
   ];
   let regNum = 0;// 记录匹配的次数
   for (let iReg = 0; iReg < arrVerify.length; iReg++) {
@@ -123,7 +124,7 @@ function validatePassword(rule: FormItemRule, valPwd: string): boolean {
       regNum = regNum + 1;
     }
   }
-  return regNum >= 2
+  return regNum >= 1
 }
 
 const loginRules = {
@@ -162,9 +163,6 @@ const register = async () => {
         await RegisterStore.register(formValue as unknown as  UserCreate);
         if (RegisterStore.userInfo){
           router.push({ name: 'login' });
-          // showModalRef.value = true
-          // timeoutRef.value = 6000
-          // countdown()
         }
       } catch (error) {
         console.log(error);
