@@ -96,7 +96,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
         password = user_dict.pop("password")
         user_dict["hashed_password"] = self.password_helper.hash(password)
 
-        await self.create_with_user_dict(user_dict, user_setting=user_setting)
+        return await self.create_with_user_dict(user_dict, user_setting=user_setting)
 
     async def create_with_user_dict(self, user_dict: dict, user_setting: Optional[UserSettingSchema] = None):
 
